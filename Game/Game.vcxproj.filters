@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{a08e0c97-f19d-44d7-8f40-1773901f0b75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="State">
+      <UniqueIdentifier>{39a6dae7-d077-4c19-a374-c2ad291ebb5c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Button">
+      <UniqueIdentifier>{b3160b8a-54c8-4a94-8760-d6ed20cfcffa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MainMenu">
+      <UniqueIdentifier>{ed8dbd35-36cc-4b84-ab72-338329b1e5ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameState">
+      <UniqueIdentifier>{5480b565-dd88-4c4b-8cff-6e8b208c5d2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="BattleField">
+      <UniqueIdentifier>{afaf5142-fda8-4ad5-84f2-fe3c6ad9fd6f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tower">
+      <UniqueIdentifier>{d04a4590-e0ff-47cd-8e29-f4b9f146b1a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Title">
+      <UniqueIdentifier>{138eaad9-bc36-4f3a-a7e2-6e53d70cdca6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AnimationConponent">
+      <UniqueIdentifier>{b18688ab-8bbe-413b-a031-c5c5adbd5f15}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Chunk">
+      <UniqueIdentifier>{5c028537-6f2e-4e84-919c-3f2f1f145b60}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AnimationTemplate">
+      <UniqueIdentifier>{3beed8af-8648-4356-8ac9-c82e582d53c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TowerTemplate">
+      <UniqueIdentifier>{c9670066-76f5-4021-a882-215cd8928396}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Monster">
+      <UniqueIdentifier>{198ce1d8-9b89-4f58-a8e2-95f4e36ab212}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MonsterTemplate">
+      <UniqueIdentifier>{bcfb087a-fde9-4ef3-8dd5-b7781ea0b968}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="State.cpp">
+      <Filter>State</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>Button</Filter>
+    </ClCompile>
+    <ClCompile Include="MainMenu.cpp">
+      <Filter>MainMenu</Filter>
+    </ClCompile>
+    <ClCompile Include="GameState.cpp">
+      <Filter>GameState</Filter>
+    </ClCompile>
+    <ClCompile Include="BattleField.cpp">
+      <Filter>BattleField</Filter>
+    </ClCompile>
+    <ClCompile Include="Tower.cpp">
+      <Filter>Tower</Filter>
+    </ClCompile>
+    <ClCompile Include="Title.cpp">
+      <Filter>Title</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationComponent.cpp">
+      <Filter>AnimationConponent</Filter>
+    </ClCompile>
+    <ClCompile Include="Chunk.cpp">
+      <Filter>Chunk</Filter>
+    </ClCompile>
+    <ClCompile Include="AnimationTemplate.cpp">
+      <Filter>AnimationTemplate</Filter>
+    </ClCompile>
+    <ClCompile Include="TowerTemplate.cpp">
+      <Filter>TowerTemplate</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterTemplate.cpp">
+      <Filter>MonsterTemplate</Filter>
+    </ClCompile>
+    <ClCompile Include="Monster.cpp">
+      <Filter>Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="TowerData.cpp">
+      <Filter>Tower</Filter>
+    </ClCompile>
+    <ClCompile Include="MonsterData.cpp">
+      <Filter>Monster</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Game.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="State.h">
+      <Filter>State</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Button</Filter>
+    </ClInclude>
+    <ClInclude Include="MainMenu.h">
+      <Filter>MainMenu</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
+      <Filter>GameState</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleField.h">
+      <Filter>BattleField</Filter>
+    </ClInclude>
+    <ClInclude Include="Tower.h">
+      <Filter>Tower</Filter>
+    </ClInclude>
+    <ClInclude Include="Title.h">
+      <Filter>Title</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationComponent.h">
+      <Filter>AnimationConponent</Filter>
+    </ClInclude>
+    <ClInclude Include="Chunk.h">
+      <Filter>Chunk</Filter>
+    </ClInclude>
+    <ClInclude Include="AnimationTemplate.h">
+      <Filter>AnimationTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="TowerTemplate.h">
+      <Filter>TowerTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterTemplate.h">
+      <Filter>MonsterTemplate</Filter>
+    </ClInclude>
+    <ClInclude Include="Monster.h">
+      <Filter>Monster</Filter>
+    </ClInclude>
+    <ClInclude Include="TowerData.h">
+      <Filter>Tower</Filter>
+    </ClInclude>
+    <ClInclude Include="MonsterData.h">
+      <Filter>Monster</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
