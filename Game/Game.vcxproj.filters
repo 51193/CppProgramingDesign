@@ -99,13 +99,13 @@
     <ClCompile Include="MonsterTemplate.cpp">
       <Filter>MonsterTemplate</Filter>
     </ClCompile>
-    <ClCompile Include="Monster.cpp">
-      <Filter>Monster</Filter>
-    </ClCompile>
     <ClCompile Include="TowerData.cpp">
       <Filter>Tower</Filter>
     </ClCompile>
     <ClCompile Include="MonsterData.cpp">
+      <Filter>Monster</Filter>
+    </ClCompile>
+    <ClCompile Include="Monster.cpp">
       <Filter>Monster</Filter>
     </ClCompile>
   </ItemGroup>

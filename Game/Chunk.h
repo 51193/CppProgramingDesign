@@ -35,10 +35,12 @@ public:
 	void removeTower();//移除目前格子里的炮台
 	Tower* getTower();//获取当前格子里炮台的指针，如果要依此生成新炮台，建议调用炮台的getname()并再实例化一个炮台，可判断该指针是否为nullptr判定格子里是否有炮台
 
+	const sf::Vector2i& getPosition();
+
 	bool isPressed();//判断当前格子是否被点击
 	bool isBlocked();//判断当前格子上是否有东西
 
-	void update(const float& dt, sf::Vector2f& mousePos);
+	void update(const float& dt, const sf::Vector2f& mousePos);
 	void render(sf::RenderTarget* target);
 };
 

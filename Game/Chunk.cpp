@@ -60,6 +60,11 @@ Tower* Chunk::getTower()
     return this->tower;
 }
 
+const sf::Vector2i& Chunk::getPosition()
+{
+    return this->position;
+}
+
 bool Chunk::isPressed()
 {
     if (this->button->isPressed())return true;
@@ -71,7 +76,7 @@ bool Chunk::isBlocked()
     return this->is_blocked;
 }
 
-void Chunk::update(const float& dt, sf::Vector2f& mousePos)
+void Chunk::update(const float& dt, const sf::Vector2f& mousePos)
 {
     if (this->tower != nullptr) {
         this->tower->update(dt);

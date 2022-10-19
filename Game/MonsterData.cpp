@@ -6,7 +6,7 @@ MonsterData::MonsterData(std::string file_name)
 	size{ 0,0 },
 	animation_size{ 0,0 }
 {
-	float x, y;
+	unsigned int x, y;
 	std::ifstream input{ file_name, std::ios::in };
 	if (input.is_open()) {
 		input >> this->health;
@@ -14,12 +14,12 @@ MonsterData::MonsterData(std::string file_name)
 		input >> x;
 		input >> y;
 
-		size = sf::Vector2f(x, y);
+		size = sf::Vector2u(x, y);
 
 		input >> x;
 		input >> y;
 
-		animation_size = sf::Vector2f(x, y);
+		animation_size = sf::Vector2u(x, y);
 
 		input.close();
 	}
@@ -29,7 +29,8 @@ MonsterData::MonsterData(std::string file_name)
 MonsterData::MonsterData(MonsterData& monster_data)
 	:health{ monster_data.health },
 	speed{ monster_data.speed },
-	size{ monster_data.size }{}
+	size{ monster_data.size },
+	animation_size{ monster_data.animation_size }{}
 
 MonsterData::~MonsterData()
 {

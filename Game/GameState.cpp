@@ -38,7 +38,9 @@ void GameState::initCards()
 
 void GameState::initBattleField()
 {
-	this->battle_field = new BattleField(this->title->getHeight(), this->window, sf::Vector2i(12, 9), sf::Vector2i(20, 15));
+	std::vector<sf::Vector2u>ends;
+	ends.push_back(sf::Vector2u(11, 4));
+	this->battle_field = new BattleField(this->title->getHeight(), this->window, sf::Vector2u(12, 9), sf::Vector2u(20, 15), ends);
 }
 
 void GameState::updateStretchedTower()
