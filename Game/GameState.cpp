@@ -41,6 +41,8 @@ void GameState::initBattleField()
 	std::vector<sf::Vector2u>ends;
 	ends.push_back(sf::Vector2u(11, 4));
 	this->battle_field = new BattleField(this->title->getHeight(), this->window, sf::Vector2u(12, 9), sf::Vector2u(20, 15), ends);
+
+	this->battle_field->updateWhenTowerChanging();
 }
 
 void GameState::updateStretchedTower()
@@ -72,6 +74,8 @@ void GameState::updatePlantTower()
 		this->battle_field->getPressed()->getTower() == nullptr) {
 
 		this->battle_field->getPressed()->setTower(this->stretched_tower->getName());
+		this->battle_field->updateWhenTowerChanging();
+
 		delete this->stretched_tower;
 		this->stretched_tower = nullptr;
 		this->tower_range->setRadius(0.f);

@@ -13,6 +13,7 @@ private:
 
 	sf::Vector2u size;//战场的格子数
 	std::vector<std::vector<Chunk*>>* map;
+	std::vector<std::vector<int>>* path_net_for_chunk;
 
 	sf::Vector2f chunk_size;//每格所占像素大小
 
@@ -31,11 +32,15 @@ private:
 	void init();
 	void initMap();
 	void initPathNet();
+	void initPathNetforChunk();
 
 	void resetPathNet();
-	void updateEndstoPathNet();//刷新终点，可以放在init里跑一边就够了，但是怕后面想漏东西把init出来的覆盖掉，所以暂时用update
 	void updateBarriertoPathNet();
 
+	void updateMonsters(const float& dt);
+
+	void updatePathNetforChunk();//在未放置或删除炮塔时，没有重复update的必要
+	void updateInnerPathNet();
 public:
 
 	BattleField(
@@ -49,6 +54,8 @@ public:
 
 	const sf::Vector2f& getChunkSize();//返回每格所占像素大小
 	Chunk* getPressed();//获取被点击的格子的指针
+
+	void updateWhenTowerChanging();
 
 	void update(const float& dt, const sf::Vector2f& mousePos);
 	void render(sf::RenderTarget* target);

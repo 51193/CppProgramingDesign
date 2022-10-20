@@ -4,6 +4,7 @@ void BattleField::init()
 {
 	this->initMap();
 	this->initPathNet();
+	this->initPathNetforChunk();
 
 	this->monsters.push_back(new Monster("test", this->path_net_size, 10, 10));
 }
@@ -26,36 +27,15 @@ void BattleField::initPathNet()
 		std::vector<int>(this->path_net_count.y * this->size.y, 0));
 }
 
+void BattleField::initPathNetforChunk()
+{
+	this->path_net_for_chunk = new std::vector<std::vector<int>>(this->size.x, std::vector<int>(this->size.y, 0));
+}
+
 void BattleField::resetPathNet()
 {
 	for (auto& i : *this->path_net) {
-		for (auto& j : i) {
-			j = 0;
-		}
-	}
-}
-
-void BattleField::updateEndstoPathNet()
-{
-	for (auto& i : this->ends) {
-		if (i.x < this->size.x && i.y < this->size.y) {
-			if (i.x == this->size.x - 1) {
-				for (size_t j{ 0 }; j < this->path_net_count.y; j++)
-					(*this->path_net)[(this->path_net_count.x) * (this->size.x) - 1][(this->path_net_count.y) * (i.y) + j] = 0x5fffffff;
-			}
-			if (i.x == 0) {
-				for (size_t j{ 0 }; j < this->path_net_count.y; j++)
-					(*this->path_net)[0][(this->path_net_count.y) * (i.y) + j] = 0x5fffffff;
-			}
-			if (i.y == this->size.y - 1) {
-				for (size_t j{ 0 }; j < this->path_net_count.x; j++)
-					(*this->path_net)[(this->path_net_count.x) * (i.x) + j][(this->path_net_count.y) * (this->size.y) - 1] = 0x5fffffff;
-			}
-			if (i.y == 0) {
-				for (size_t j{ 0 }; j < this->path_net_count.x; j++)
-					(*this->path_net)[(this->path_net_count.x) * (i.x) + j][0] = 0x5fffffff;
-			}
-		}
+		std::fill(i.begin(), i.end(), 0);
 	}
 }
 
@@ -76,12 +56,84 @@ void BattleField::updateBarriertoPathNet()
 	for (auto& i : monsters) {
 		for (int j{ (int)i->getPositiononPathNet().x - (int)(i->getSize().x / 2) }; j <= (int)i->getPositiononPathNet().x + (int)(i->getSize().x / 2); j++) {
 			for (int k{ (int)i->getPositiononPathNet().y - (int)(i->getSize().y / 2) }; k <= (int)i->getPositiononPathNet().y + (int)(i->getSize().y / 2); k++) {
-				if (j > 0 && j < (int)this->path_net_count.x * (int)this->size.x - 1 &&
-					k > 0 && k < (int)this->path_net_count.y * (int)this->size.y - 1) {
+				if (j >= 0 && j <= (int)this->path_net_count.x * (int)this->size.x - 1 &&
+					k >= 0 && k <= (int)this->path_net_count.y * (int)this->size.y - 1) {
 					(*this->path_net)[j][k]--;
 				}
 			}
 		}
+	}
+}
+
+void BattleField::updatePathNetforChunk()
+{
+	unsigned int max_count{ this->size.x * this->size.y + 1 };
+
+	for (auto& i : *this->path_net_for_chunk) {
+		std::fill(i.begin(), i.end(), max_count);
+	}
+
+	std::queue<sf::Vector2u> BFS_queue;
+
+	for (auto& i : this->ends) {
+		(*this->path_net_for_chunk)[i.x][i.y] = 0;
+		BFS_queue.push(i);
+	}
+
+	while (!BFS_queue.empty()) {
+		sf::Vector2u cur{ BFS_queue.front() };
+		BFS_queue.pop();
+
+		if (cur.x > 0) {
+			if ((*path_net_for_chunk)[cur.x][cur.y] + 1 < (*path_net_for_chunk)[cur.x - 1][cur.y] && (!(*map)[cur.x - 1][cur.y]->isBlocked())) {
+				(*path_net_for_chunk)[cur.x - 1][cur.y] = (*path_net_for_chunk)[cur.x][cur.y] + 1;
+				BFS_queue.push(sf::Vector2u(cur.x - 1, cur.y));
+			}
+		}
+		if (cur.x < this->size.x - 1) {
+			if ((*path_net_for_chunk)[cur.x][cur.y] + 1 < (*path_net_for_chunk)[cur.x + 1][cur.y] && (!(*map)[cur.x + 1][cur.y]->isBlocked())) {
+				(*path_net_for_chunk)[cur.x + 1][cur.y] = (*path_net_for_chunk)[cur.x][cur.y] + 1;
+				BFS_queue.push(sf::Vector2u(cur.x + 1, cur.y));
+			}
+		}
+		if (cur.y > 0) {
+			if ((*path_net_for_chunk)[cur.x][cur.y] + 1 < (*path_net_for_chunk)[cur.x][cur.y - 1] && (!(*map)[cur.x][cur.y - 1]->isBlocked())) {
+				(*path_net_for_chunk)[cur.x][cur.y - 1] = (*path_net_for_chunk)[cur.x][cur.y] + 1;
+				BFS_queue.push(sf::Vector2u(cur.x, cur.y - 1));
+			}
+		}
+		if (cur.y < this->size.y - 1) {
+			if ((*path_net_for_chunk)[cur.x][cur.y] + 1 < (*path_net_for_chunk)[cur.x][cur.y + 1] && (!(*map)[cur.x][cur.y + 1]->isBlocked())) {
+				(*path_net_for_chunk)[cur.x][cur.y + 1] = (*path_net_for_chunk)[cur.x][cur.y] + 1;
+				BFS_queue.push(sf::Vector2u(cur.x, cur.y + 1));
+			}
+		}
+	}
+}
+
+void BattleField::updateInnerPathNet()
+{
+	for (auto& i : *this->map) {
+		for (auto& j : i) {
+			j->updateStepMapandPathingQueue(this->path_net_count, *this->path_net_for_chunk);
+		}
+	}
+}
+
+void BattleField::updateMonsters(const float& dt)
+{
+	for (auto& i : monsters) {
+		i->update(
+			dt,
+			this->offset,
+			this->path_net_size,
+			this->size,
+			this->path_net_count,
+			*this->path_net,
+			*this->path_net_for_chunk,
+			(*this->map)[i->getPositiononPathNet().x / this->path_net_count.x][i->getPositiononPathNet().y / this->path_net_count.y]->getStartStepMap(),
+			(*this->map)[i->getPositiononPathNet().x / this->path_net_count.x][i->getPositiononPathNet().y / this->path_net_count.y]->getStartBFSQueue()
+		);
 	}
 }
 
@@ -143,11 +195,15 @@ Chunk* BattleField::getPressed()
 	return nullptr;
 }
 
+void BattleField::updateWhenTowerChanging()
+{
+	this->updatePathNetforChunk();
+	this->updateInnerPathNet();
+}
+
 void BattleField::update(const float& dt, const sf::Vector2f& mousePos)
 {
 	this->resetPathNet();
-
-	this->updateEndstoPathNet();
 
 	this->updateBarriertoPathNet();
 
@@ -156,9 +212,8 @@ void BattleField::update(const float& dt, const sf::Vector2f& mousePos)
 			j->update(dt, mousePos);
 		}
 	}
-	for (auto& i : this->monsters) {
-		i->update(dt, this->offset, this->path_net_size, *this->path_net, this->path_net_count, this->size);
-	}
+
+	this->updateMonsters(dt);
 }
 
 void BattleField::render(sf::RenderTarget* target)
