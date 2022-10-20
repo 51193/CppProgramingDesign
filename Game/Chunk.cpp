@@ -108,12 +108,14 @@ const std::vector<std::vector<int>>& Chunk::getStartStepMap()
 
 void Chunk::updateStepMapandPathingQueue(const sf::Vector2u& path_net_count, const std::vector<std::vector<int>>& path_net_for_chunk)
 {
-	constexpr unsigned int a = 3;//寻路单元的各边长比标准格子大1/a
+	constexpr unsigned int a = 1;//寻路单元的各边长比标准格子大1/a
+	unsigned int extra_x = path_net_count.x / a;
+	unsigned int extra_y = path_net_count.y / a;
 
 	while (!this->start_BFS_queue.empty())this->start_BFS_queue.pop();
 
 	if (this->start_step_map == nullptr) {
-		this->start_step_map = new std::vector<std::vector<int>>(path_net_count.x + path_net_count.x / a * 2, std::vector<int>(path_net_count.y + path_net_count.y / a * 2, 0));
+		this->start_step_map = new std::vector<std::vector<int>>(path_net_count.x + extra_x * 2, std::vector<int>(path_net_count.y + extra_y * 2, 0));
 	}
 	unsigned int max_step{ (*this->start_step_map).size() * (*this->start_step_map)[0].size() + 1 };
 	for (auto& i : *this->start_step_map) {
@@ -162,23 +164,23 @@ void Chunk::updateStepMapandPathingQueue(const sf::Vector2u& path_net_count, con
 		}
 	}
 	if (this->position.x == 0) {
-		for (size_t i{ 0 }; i <= path_net_count.x / a; i++) {
+		for (size_t i{ 0 }; i <= extra_x; i++) {
 			std::fill((*this->start_step_map)[i].begin(), (*this->start_step_map)[i].end(), max_step);
 		}
 	}
 	if (this->position.x == path_net_for_chunk.size() - 1) {
-		for (size_t i{ 0 }; i <= path_net_count.x / a; i++) {
+		for (size_t i{ 0 }; i <= extra_x; i++) {
 			std::fill((this->start_step_map->rbegin() + i)->begin(), (this->start_step_map->rbegin() + i)->end(), max_step);
 		}
 	}
 	if (this->position.y == 0) {
 		for (size_t i{ 0 }; i < this->start_step_map->size(); i++) {
-			std::fill((*this->start_step_map)[i].begin(), (*this->start_step_map)[i].begin() + path_net_count.y / a, max_step);
+			std::fill((*this->start_step_map)[i].begin(), (*this->start_step_map)[i].begin() + extra_y, max_step);
 		}
 	}
 	if (this->position.y == path_net_for_chunk[0].size() - 1) {
 		for (size_t i{ 0 }; i < this->start_step_map->size(); i++) {
-			std::fill((*this->start_step_map)[i].end() - path_net_count.y / a, (*this->start_step_map)[i].end(), max_step);
+			std::fill((*this->start_step_map)[i].rbegin(), (*this->start_step_map)[i].rbegin() + extra_y, max_step);
 		}
 	}
 	for (size_t i{ 0 }; i < (*this->start_step_map).size(); i++) {

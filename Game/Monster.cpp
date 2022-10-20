@@ -45,13 +45,15 @@ void Monster::updatePathing(
 
 	while (!this->path.empty())this->path.pop();
 
-	constexpr int a = 3;//寻路单元的各边长比标准格子大1/a，如果需要修改，Chunk::updateStepMapandPathingQueue()里的也得改
+	constexpr int a = 1;//寻路单元的各边长比标准格子大1/a，如果需要修改，Chunk::updateStepMapandPathingQueue()里的也得改
+	unsigned int extra_x = path_net_count.x / a;
+	unsigned int extra_y = path_net_count.y / a;
 
 	unsigned int pos_on_battlefield_x{ this->position_on_pathnet.x / path_net_count.x };
 	unsigned int pos_on_battlefield_y{ this->position_on_pathnet.y / path_net_count.y };
 
-	int offset_x{ (int)pos_on_battlefield_x * (int)path_net_count.x - (int)path_net_count.x / a };
-	int offset_y{ (int)pos_on_battlefield_y * (int)path_net_count.y - (int)path_net_count.y / a };
+	int offset_x{ (int)pos_on_battlefield_x * (int)path_net_count.x - (int)extra_x };
+	int offset_y{ (int)pos_on_battlefield_y * (int)path_net_count.y - (int)extra_y };
 
 	this->step_map = start_step_map;
 	
@@ -70,7 +72,7 @@ void Monster::updatePathing(
 					}
 				}
 			}
-			if (cur.x < this->step_map.size() - 1) {
+			if (cur.x < (int)this->step_map.size() - 1) {
 				if (cur.x + 1 + offset_x < (int)path_net.size()) {
 					if (this->step_map[cur.x][cur.y] + 1 < this->step_map[cur.x + 1][cur.y] && (int)path_net[cur.x + offset_x + 1][cur.y + offset_y] >= 0) {
 						this->step_map[cur.x + 1][cur.y] = this->step_map[cur.x][cur.y] + 1;
@@ -88,7 +90,7 @@ void Monster::updatePathing(
 					}
 				}
 			}
-			if (cur.y < this->step_map[0].size() - 1) {
+			if (cur.y < (int)this->step_map[0].size() - 1) {
 				if (cur.y + 1 + offset_y < (int)path_net[0].size()) {
 					if (this->step_map[cur.x][cur.y] + 1 < this->step_map[cur.x][cur.y + 1] && (int)path_net[cur.x + offset_x][cur.y + offset_y + 1] >= 0) {
 						this->step_map[cur.x][cur.y + 1] = this->step_map[cur.x][cur.y] + 1;
@@ -99,7 +101,7 @@ void Monster::updatePathing(
 		}
 	}
 
-	sf::Vector2u cur{ this->position_on_pathnet.x - offset_x, this->position_on_pathnet.y - offset_y };
+	sf::Vector2i cur{ (int)this->position_on_pathnet.x - offset_x, (int)this->position_on_pathnet.y - offset_y };
 
 	unsigned int max_step = this->step_map.size() * this->step_map[0].size() + 1;
 	unsigned int arr[4];
@@ -111,26 +113,27 @@ void Monster::updatePathing(
 		if (cur.y > 0) {
 			arr[0] = this->step_map[cur.x][cur.y - 1];
 		}
-		if (cur.y < this->step_map[0].size() - 1) {
+		if (cur.y < (int)this->step_map[0].size() - 1) {
 			arr[1] = this->step_map[cur.x][cur.y + 1];
 		}
 		if (cur.x > 0) {
 			arr[2] = this->step_map[cur.x - 1][cur.y];
 		}
-		if (cur.x < this->step_map.size() - 1) {
+		if (cur.x < (int)this->step_map.size() - 1) {
 			arr[3] = this->step_map[cur.x + 1][cur.y];
 		}
 		unsigned int min = max_step;
 		for (auto i : arr) {
 			if (min > i)min = i;
 		}
-		if (arr[0] == min) cur = sf::Vector2u(cur.x, cur.y - 1);
-		else if (arr[1] == min) cur = sf::Vector2u(cur.x, cur.y + 1);
-		else if (arr[2] == min) cur = sf::Vector2u(cur.x - 1, cur.y);
-		else if (arr[3] == min) cur = sf::Vector2u(cur.x + 1, cur.y);
+		if (arr[0] == min) cur = sf::Vector2i(cur.x, cur.y - 1);
+		else if (arr[1] == min) cur = sf::Vector2i(cur.x, cur.y + 1);
+		else if (arr[2] == min) cur = sf::Vector2i(cur.x - 1, cur.y);
+		else if (arr[3] == min) cur = sf::Vector2i(cur.x + 1, cur.y);
 
-		this->path.push(cur);
+		this->path.push(sf::Vector2u(cur.x + offset_x, cur.y + offset_y));
 	}
+
 	for (int i{ (int)this->position_on_pathnet.x - (int)(this->monster_data->size.x / 2) }; i <= (int)this->position_on_pathnet.x + (int)(this->monster_data->size.x / 2); i++) {
 		for (int j{ (int)this->position_on_pathnet.y - (int)(this->monster_data->size.y / 2) }; j <= (int)this->position_on_pathnet.y + (int)(this->monster_data->size.y / 2); j++) {
 			if (i >= 0 && i <= (int)path_net.size() - 1 &&

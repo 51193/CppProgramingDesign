@@ -60,6 +60,7 @@ void Title::insertTower(const std::string& name)
 
 	for (size_t i{ 0 }; i < this->tower_list.size(); i++) {
 		this->tower_list[i]->moveto(this->title_background[i]->getPosition());
+		
 		this->tower_list[i]->setScale(this->title_background[i]->getSize());
 	}
 	
