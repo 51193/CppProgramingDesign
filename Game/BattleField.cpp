@@ -6,7 +6,55 @@ void BattleField::init()
 	this->initPathNet();
 	this->initPathNetforChunk();
 
-	this->monsters.push_back(new Monster("test", this->path_net_size, 10, 10));
+	this->monsters.push_back(new Monster("testf", this->path_net_size, 10, 10));
+	this->monsters.push_back(new Monster("testf", this->path_net_size, 10, 20));
+	this->monsters.push_back(new Monster("testf", this->path_net_size, 10, 30));
+	this->monsters.push_back(new Monster("testf", this->path_net_size, 10, 40));
+	this->monsters.push_back(new Monster("test", this->path_net_size, 10, 50));
+	this->monsters.push_back(new Monster("test", this->path_net_size, 10, 60));
+	this->monsters.push_back(new Monster("test", this->path_net_size, 10, 70));
+	this->monsters.push_back(new Monster("test", this->path_net_size, 10, 80));
+	this->monsters.push_back(new Monster("test", this->path_net_size, 10, 90));
+	this->monsters.push_back(new Monster("tests", this->path_net_size, 10, 100));
+	this->monsters.push_back(new Monster("tests", this->path_net_size, 10, 110));
+	this->monsters.push_back(new Monster("tests", this->path_net_size, 10, 120));
+	this->monsters.push_back(new Monster("tests", this->path_net_size, 10, 130));
+
+	(*this->map)[1][0]->setTower("test");
+	(*this->map)[1][1]->setTower("test");
+	(*this->map)[1][2]->setTower("test");
+	(*this->map)[1][3]->setTower("test");
+	(*this->map)[1][4]->setTower("test");
+	(*this->map)[1][5]->setTower("test");
+	(*this->map)[1][6]->setTower("test");
+	(*this->map)[1][7]->setTower("test");
+
+	(*this->map)[3][1]->setTower("test");
+	(*this->map)[3][2]->setTower("test");
+	(*this->map)[3][3]->setTower("test");
+	(*this->map)[3][4]->setTower("test");
+	(*this->map)[3][5]->setTower("test");
+	(*this->map)[3][6]->setTower("test");
+	(*this->map)[3][7]->setTower("test");
+	(*this->map)[3][8]->setTower("test");
+
+	(*this->map)[5][0]->setTower("test");
+	(*this->map)[5][1]->setTower("test");
+	(*this->map)[5][2]->setTower("test");
+	(*this->map)[5][3]->setTower("test");
+	(*this->map)[5][4]->setTower("test");
+	(*this->map)[5][5]->setTower("test");
+	(*this->map)[5][6]->setTower("test");
+	(*this->map)[5][7]->setTower("test");
+
+	(*this->map)[7][1]->setTower("test");
+	(*this->map)[7][2]->setTower("test");
+	(*this->map)[7][3]->setTower("test");
+	(*this->map)[7][4]->setTower("test");
+	(*this->map)[7][5]->setTower("test");
+	(*this->map)[7][6]->setTower("test");
+	(*this->map)[7][7]->setTower("test");
+	(*this->map)[7][8]->setTower("test");
 }
 
 void BattleField::initMap()

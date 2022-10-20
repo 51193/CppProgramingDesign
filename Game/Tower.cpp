@@ -40,6 +40,7 @@ Tower::Tower(std::string name, unsigned short int exist_mode)
 	state{ IdleState }
 {
 	this->init();
+	this->playingAnimation(0);
 }
 
 Tower::~Tower()
