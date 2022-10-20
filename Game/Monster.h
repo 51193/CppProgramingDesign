@@ -28,7 +28,12 @@ private:
 	void initTemplate();
 	void initSpirteScale(const sf::Vector2f& path_net_size);
 
-	void updatePathing(std::vector<std::vector<int>>& path_net, sf::Vector2u path_net_count, sf::Vector2u battlefield_size);//寻路函数，需要修改传入的path_net以换取更少的拷贝次数
+	void updatePathing(
+		const sf::Vector2u& path_net_count,
+		std::vector<std::vector<int>>& path_net,
+		const std::vector<std::vector<int>>& start_step_map,
+		const std::queue<sf::Vector2u>& start_BFS_queue
+	);//寻路
 	void updateMoving(const float& dt);//根据path队列进行实际的移动
 	void updatePosition(const sf::Vector2f& offset, const sf::Vector2f& path_net_size);//将exact_pos根据position刷新
 	void updateExactPos();//将sprite的位置置于exact_pos，用于渲染
@@ -50,7 +55,17 @@ public:
 
 	const sf::Vector2u& getSize();//获取碰撞箱，单位为寻路节点
 
-	void update(const float& dt, const sf::Vector2f& offset, const sf::Vector2f& path_net_size, std::vector<std::vector<int>>& path_net, sf::Vector2u path_net_count, sf::Vector2u battlefield_size);
+	void update(
+		const float& dt,
+		const sf::Vector2f& offset,
+		const sf::Vector2f& path_net_size,
+		const sf::Vector2u& battlefield_size,
+		const sf::Vector2u& path_net_count,
+		std::vector<std::vector<int>>& path_net,
+		const std::vector<std::vector<int>>& path_net_for_chunk,
+		const std::vector<std::vector<int>>& start_step_map,
+		const std::queue<sf::Vector2u>& start_BFS_queue
+	);
 	void render(sf::RenderTarget* target);
 };
 

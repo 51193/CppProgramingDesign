@@ -27,137 +27,115 @@ void Monster::initSpirteScale(const sf::Vector2f& path_net_size)
 	);
 }
 
-void Monster::updatePathing(std::vector<std::vector<int>>& path_net, sf::Vector2u path_net_count, sf::Vector2u battlefield_size)
+void Monster::updatePathing(
+	const sf::Vector2u& path_net_count,
+	std::vector<std::vector<int>>& path_net,
+	const std::vector<std::vector<int>>& start_step_map,
+	const std::queue<sf::Vector2u>& start_BFS_queue
+)
 {
-	for (int j{ (int)this->position_on_pathnet.x - (int)(this->monster_data->size.x / 2) }; j <= (int)this->position_on_pathnet.x + (int)(this->monster_data->size.x / 2); j++) {
-		for (int k{ (int)this->position_on_pathnet.y - (int)(this->monster_data->size.y / 2) }; k <= (int)this->position_on_pathnet.y + (int)(this->monster_data->size.y / 2); k++) {
-			if (j > 0 && j < (int)path_net_count.x * (int)battlefield_size.x - 1 &&
-				k > 0 && k < (int)path_net_count.y * (int)battlefield_size.y - 1) {
-				path_net[j][k]++;
+	for (int i{ (int)this->position_on_pathnet.x - (int)(this->monster_data->size.x / 2) }; i <= (int)this->position_on_pathnet.x + (int)(this->monster_data->size.x / 2); i++) {
+		for (int j{ (int)this->position_on_pathnet.y - (int)(this->monster_data->size.y / 2) }; j <= (int)this->position_on_pathnet.y + (int)(this->monster_data->size.y / 2); j++) {
+			if (i >= 0 && i <= (int)path_net.size() - 1 &&
+				j >= 0 && j <= (int)path_net[0].size() - 1) {
+				path_net[i][j]++;
 			}
 		}
 	}
 
-	this->step_map = path_net;
-	unsigned int max_count = this->step_map.size() * this->step_map[0].size() + 1;
-	for (auto& i : this->step_map) {
-		for (auto& j : i) {
-			j = max_count;
-		}
-	}
-
-	std::queue<sf::Vector2u> BFS_queue;
-
-	for (size_t i{ 0 }; i < path_net.size(); i++) {
-		for (size_t j{ 0 }; j < path_net[0].size(); j++) {
-			if (path_net[i][j] == 0x5fffffff) {
-				BFS_queue.push(sf::Vector2u(i, j));
-				this->step_map[i][j] = 0;
-			}
-		}
-	}
-	
-	while (!BFS_queue.empty()) {
-		sf::Vector2u cur = BFS_queue.front();
-		BFS_queue.pop();
-
-		if (cur.x > 0) {//向左
-			if (step_map[cur.x][cur.y] + 1 < step_map[cur.x - 1][cur.y] && path_net[cur.x - 1][cur.y] > -1) {
-				BFS_queue.push(sf::Vector2u(cur.x - 1, cur.y));
-				step_map[cur.x - 1][cur.y] = step_map[cur.x][cur.y] + 1;
-			}
-		}
-		if (cur.x < path_net_count.x * battlefield_size.x - 1) {//向右
-			if (step_map[cur.x][cur.y] + 1 < step_map[cur.x + 1][cur.y] && path_net[cur.x + 1][cur.y] > -1) {
-				BFS_queue.push(sf::Vector2u(cur.x + 1, cur.y));
-				step_map[cur.x + 1][cur.y] = step_map[cur.x][cur.y] + 1;
-			}
-		}
-		if (cur.y > 0) {//向上
-			if (step_map[cur.x][cur.y] + 1 < step_map[cur.x][cur.y - 1] && path_net[cur.x][cur.y - 1] > -1) {
-				BFS_queue.push(sf::Vector2u(cur.x, cur.y - 1));
-				step_map[cur.x][cur.y - 1] = step_map[cur.x][cur.y] + 1;
-			}
-		}
-		if (cur.y < path_net_count.y * battlefield_size.y - 1) {//向下
-			if (step_map[cur.x][cur.y] + 1 < step_map[cur.x][cur.y + 1] && path_net[cur.x][cur.y + 1] > -1) {
-				BFS_queue.push(sf::Vector2u(cur.x, cur.y + 1));
-				step_map[cur.x][cur.y + 1] = step_map[cur.x][cur.y] + 1;
-			}
-		}
-	}
 	while (!this->path.empty())this->path.pop();
 
-	sf::Vector2u cur{ this->position_on_pathnet };
-	while (path_net[cur.x][cur.y] != 0x5fffffff) {
-		enum direction {
-			null=0,
-			up,
-			down,
-			left,
-			right
-		};
-		unsigned int x{ max_count };
-		unsigned int dir{ null };
-		if (cur.y > 0) {//向上
-			if (step_map[cur.x][cur.y - 1] < (int)x) {
-				x = step_map[cur.x][cur.y - 1];
-				dir = up;
+	constexpr int a = 3;//寻路单元的各边长比标准格子大1/a，如果需要修改，Chunk::updateStepMapandPathingQueue()里的也得改
+
+	unsigned int pos_on_battlefield_x{ this->position_on_pathnet.x / path_net_count.x };
+	unsigned int pos_on_battlefield_y{ this->position_on_pathnet.y / path_net_count.y };
+
+	int offset_x{ (int)pos_on_battlefield_x * (int)path_net_count.x - (int)path_net_count.x / a };
+	int offset_y{ (int)pos_on_battlefield_y * (int)path_net_count.y - (int)path_net_count.y / a };
+
+	this->step_map = start_step_map;
+	
+	std::queue<sf::Vector2u> BFS_queue = start_BFS_queue;
+
+	while (!BFS_queue.empty()) {
+		sf::Vector2i cur = sf::Vector2i{ (int)BFS_queue.front().x,(int)BFS_queue.front().y };
+		BFS_queue.pop();
+
+		if (cur.y + offset_y >= 0 && cur.y + offset_y < (int)path_net[0].size()) {
+			if (cur.x > 0) {
+				if (cur.x - 1 + offset_x > 0) {
+					if (this->step_map[cur.x][cur.y] + 1 < this->step_map[cur.x - 1][cur.y] && (int)path_net[cur.x + offset_x - 1][cur.y + offset_y] >= 0) {
+						this->step_map[cur.x - 1][cur.y] = this->step_map[cur.x][cur.y] + 1;
+						BFS_queue.push(sf::Vector2u(cur.x - 1, cur.y));
+					}
+				}
+			}
+			if (cur.x < this->step_map.size() - 1) {
+				if (cur.x + 1 + offset_x < (int)path_net.size()) {
+					if (this->step_map[cur.x][cur.y] + 1 < this->step_map[cur.x + 1][cur.y] && (int)path_net[cur.x + offset_x + 1][cur.y + offset_y] >= 0) {
+						this->step_map[cur.x + 1][cur.y] = this->step_map[cur.x][cur.y] + 1;
+						BFS_queue.push(sf::Vector2u(cur.x + 1, cur.y));
+					}
+				}
 			}
 		}
-		if (cur.y < path_net_count.y * battlefield_size.y + 1) {//向下
-			if (step_map[cur.x][cur.y + 1] < (int)x) {
-				x = step_map[cur.x][cur.y + 1];
-				dir = down;
+		if (cur.x + offset_x >= 0 && cur.x + offset_x < (int)path_net.size()) {
+			if (cur.y > 0) {
+				if (cur.y - 1 + offset_y > 0) {
+					if (this->step_map[cur.x][cur.y] + 1 < this->step_map[cur.x][cur.y - 1] && (int)path_net[cur.x + offset_x][cur.y + offset_y - 1] >= 0) {
+						this->step_map[cur.x][cur.y - 1] = this->step_map[cur.x][cur.y] + 1;
+						BFS_queue.push(sf::Vector2u(cur.x, cur.y - 1));
+					}
+				}
+			}
+			if (cur.y < this->step_map[0].size() - 1) {
+				if (cur.y + 1 + offset_y < (int)path_net[0].size()) {
+					if (this->step_map[cur.x][cur.y] + 1 < this->step_map[cur.x][cur.y + 1] && (int)path_net[cur.x + offset_x][cur.y + offset_y + 1] >= 0) {
+						this->step_map[cur.x][cur.y + 1] = this->step_map[cur.x][cur.y] + 1;
+						BFS_queue.push(sf::Vector2u(cur.x, cur.y + 1));
+					}
+				}
 			}
 		}
-		if (cur.x > 0) {//向左
-			if (step_map[cur.x - 1][cur.y] < (int)x) {
-				x = step_map[cur.x - 1][cur.y];
-				dir = left;
-			}
-		}
-		if (cur.x < path_net_count.x * battlefield_size.x - 1) {//向右
-			if (step_map[cur.x + 1][cur.y] < (int)x) {
-				x = step_map[cur.x + 1][cur.y];
-				dir = right;
-			}
-		}
-		bool is_stuck{ false };
-		switch (dir) {
-		case up: {
-			cur = sf::Vector2u{ cur.x, cur.y - 1 };
-			path.push(cur);
-			break;
-		}
-		case down: {
-			cur = sf::Vector2u{ cur.x, cur.y + 1 };
-			path.push(cur);
-			break;
-		}
-		case left: {
-			cur = sf::Vector2u{ cur.x - 1, cur.y};
-			path.push(cur);
-			break;
-		}
-		case right: {
-			cur = sf::Vector2u{ cur.x + 1, cur.y };
-			path.push(cur);
-			break;
-		}
-		default: {
-			is_stuck = true;
-			break;
-		}
-		}
-		if (is_stuck)break;
 	}
 
-	for (int j{ (int)this->position_on_pathnet.x - (int)(this->monster_data->size.x / 2) }; j <= (int)this->position_on_pathnet.x + (int)(this->monster_data->size.x / 2); j++) {
-		for (int k{ (int)this->position_on_pathnet.y - (int)(this->monster_data->size.y / 2) }; k <= (int)this->position_on_pathnet.y + (int)(this->monster_data->size.y / 2); k++) {
-			if (j > 0 && j < (int)path_net_count.x * (int)battlefield_size.x - 1 &&
-				k > 0 && k < (int)path_net_count.y * (int)battlefield_size.y - 1) {
-				path_net[j][k] --;
+	sf::Vector2u cur{ this->position_on_pathnet.x - offset_x, this->position_on_pathnet.y - offset_y };
+
+	unsigned int max_step = this->step_map.size() * this->step_map[0].size() + 1;
+	unsigned int arr[4];
+
+	while (this->step_map[cur.x][cur.y] != 0) {
+		for (auto& i : arr) {
+			i = max_step;
+		}
+		if (cur.y > 0) {
+			arr[0] = this->step_map[cur.x][cur.y - 1];
+		}
+		if (cur.y < this->step_map[0].size() - 1) {
+			arr[1] = this->step_map[cur.x][cur.y + 1];
+		}
+		if (cur.x > 0) {
+			arr[2] = this->step_map[cur.x - 1][cur.y];
+		}
+		if (cur.x < this->step_map.size() - 1) {
+			arr[3] = this->step_map[cur.x + 1][cur.y];
+		}
+		unsigned int min = max_step;
+		for (auto i : arr) {
+			if (min > i)min = i;
+		}
+		if (arr[0] == min) cur = sf::Vector2u(cur.x, cur.y - 1);
+		else if (arr[1] == min) cur = sf::Vector2u(cur.x, cur.y + 1);
+		else if (arr[2] == min) cur = sf::Vector2u(cur.x - 1, cur.y);
+		else if (arr[3] == min) cur = sf::Vector2u(cur.x + 1, cur.y);
+
+		this->path.push(cur);
+	}
+	for (int i{ (int)this->position_on_pathnet.x - (int)(this->monster_data->size.x / 2) }; i <= (int)this->position_on_pathnet.x + (int)(this->monster_data->size.x / 2); i++) {
+		for (int j{ (int)this->position_on_pathnet.y - (int)(this->monster_data->size.y / 2) }; j <= (int)this->position_on_pathnet.y + (int)(this->monster_data->size.y / 2); j++) {
+			if (i >= 0 && i <= (int)path_net.size() - 1 &&
+				j >= 0 && j <= (int)path_net[0].size() - 1) {
+				path_net[i][j]--;
 			}
 		}
 	}
@@ -205,7 +183,18 @@ void Monster::updateExactPos()
 
 void Monster::playingAnimation(const float& dt)
 {
-	this->animation_component->play("up", dt, false);
+	if (!this->path.empty()) {
+		float x{ this->path.front().x - this->position.x };
+		float y{ this->path.front().y - this->position.y };
+		if (abs(x) > abs(y)) {
+			if (x > 0)this->animation_component->play("left", dt, false);
+			else this->animation_component->play("right", dt, false);
+		}
+		else {
+			if (y > 0)this->animation_component->play("down", dt, false);
+			else this->animation_component->play("up", dt, false);
+		}
+	}
 }
 
 Monster::Monster(const std::string& name, const sf::Vector2f& path_net_size, unsigned int x, unsigned int y)
@@ -252,9 +241,19 @@ const sf::Vector2u& Monster::getSize()
 	return this->monster_data->animation_size;
 }
 
-void Monster::update(const float& dt, const sf::Vector2f& offset, const sf::Vector2f& path_net_size, std::vector<std::vector<int>>& path_net, sf::Vector2u path_net_count, sf::Vector2u battlefield_size)
+void Monster::update(
+	const float& dt,
+	const sf::Vector2f& offset,
+	const sf::Vector2f& path_net_size,
+	const sf::Vector2u& battlefield_size,
+	const sf::Vector2u& path_net_count,
+	std::vector<std::vector<int>>& path_net,
+	const std::vector<std::vector<int>>& path_net_for_chunk,
+	const std::vector<std::vector<int>>& start_step_map,
+	const std::queue<sf::Vector2u>& start_BFS_queue
+)
 {
-	this->updatePathing(path_net, path_net_count, battlefield_size);
+	this->updatePathing(path_net_count, path_net, start_step_map, start_BFS_queue);
 
 	this->updateMoving(dt);
 
