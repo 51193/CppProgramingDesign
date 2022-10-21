@@ -2,7 +2,6 @@
 #define BATTLEFIELD_H
 
 #include"Chunk.h"
-#include"Monster.h"
 
 class BattleField
 {
@@ -54,6 +53,8 @@ public:
 
 	const sf::Vector2f& getChunkSize();//返回每格所占像素大小
 	Chunk* getPressed();//获取被点击的格子的指针
+	const std::list<Monster*>& getMonsterList();
+	const sf::Vector2u& getPathNetCount();
 
 	void updateWhenTowerChanging();
 

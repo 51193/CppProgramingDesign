@@ -6,6 +6,7 @@
 
 #include"Button.h"
 #include"Tower.h"
+#include"Monster.h"
 
 enum EndSide {
 	Null=0,
@@ -46,6 +47,7 @@ public:
 
 	bool isPressed();//判断当前格子是否被点击
 	bool isBlocked();//判断当前格子上是否有东西
+	bool isOccupiedByMonster(const std::list<Monster*>& monsters, const sf::Vector2u& path_net_count);
 
 	void updateStepMapandPathingQueue(
 		const sf::Vector2u& path_net_count,

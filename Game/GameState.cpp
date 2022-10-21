@@ -71,7 +71,9 @@ void GameState::updatePlantTower()
 {
 	if (this->stretched_tower != nullptr &&
 		this->battle_field->getPressed() != nullptr &&
-		this->battle_field->getPressed()->getTower() == nullptr) {
+		this->battle_field->getPressed()->getTower() == nullptr &&
+		!this->battle_field->getPressed()->isOccupiedByMonster(this->battle_field->getMonsterList(), this->battle_field->getPathNetCount())
+		) {
 
 		this->battle_field->getPressed()->setTower(this->stretched_tower->getName());
 		this->battle_field->updateWhenTowerChanging();

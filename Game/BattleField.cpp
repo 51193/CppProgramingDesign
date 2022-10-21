@@ -243,6 +243,16 @@ Chunk* BattleField::getPressed()
 	return nullptr;
 }
 
+const std::list<Monster*>& BattleField::getMonsterList()
+{
+	return this->monsters;
+}
+
+const sf::Vector2u& BattleField::getPathNetCount()
+{
+	return this->path_net_count;
+}
+
 void BattleField::updateWhenTowerChanging()
 {
 	this->updatePathNetforChunk();

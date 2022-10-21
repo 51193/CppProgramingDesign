@@ -126,12 +126,15 @@ void Monster::updatePathing(
 		for (auto i : arr) {
 			if (min > i)min = i;
 		}
-		if (arr[0] == min) cur = sf::Vector2i(cur.x, cur.y - 1);
-		else if (arr[1] == min) cur = sf::Vector2i(cur.x, cur.y + 1);
-		else if (arr[2] == min) cur = sf::Vector2i(cur.x - 1, cur.y);
-		else if (arr[3] == min) cur = sf::Vector2i(cur.x + 1, cur.y);
+		if (min < max_step) {
+			if (arr[0] == min) cur = sf::Vector2i(cur.x, cur.y - 1);
+			else if (arr[1] == min) cur = sf::Vector2i(cur.x, cur.y + 1);
+			else if (arr[2] == min) cur = sf::Vector2i(cur.x - 1, cur.y);
+			else if (arr[3] == min) cur = sf::Vector2i(cur.x + 1, cur.y);
 
-		this->path.push(sf::Vector2u(cur.x + offset_x, cur.y + offset_y));
+			this->path.push(sf::Vector2u(cur.x + offset_x, cur.y + offset_y));
+		}
+		else break;
 	}
 
 	for (int i{ (int)this->position_on_pathnet.x - (int)(this->monster_data->size.x / 2) }; i <= (int)this->position_on_pathnet.x + (int)(this->monster_data->size.x / 2); i++) {
