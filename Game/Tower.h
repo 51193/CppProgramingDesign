@@ -56,8 +56,7 @@ public:
 	sf::Vector2f getSize();//获取大小（这个大小是缩放过的大小，不需要乘缩放比例，可以直接使用）
 	sf::Vector2f getScale();//获取缩放的比例
 	std::string getName();//获取名称
-	float getRange();//该值表示在电脑屏幕宽2560时，攻击范围半径像素的像素数，尽量调用另一个range函数，调用这个时一切相关函数在使用该值前都需要进行range*(window.size().x/2560)处理
-	float getRangeinWindow(sf::RenderWindow* window);//调用range时，应该传个window进来，尽可能地调用这个
+	float getRange();//该值表示炮塔射程，单位是寻路网格
 	float getDamage();//获取伤害
 	float getCooldown();//获取冷却
 	bool getAOEBool();//获取是否为范围伤害的布尔值

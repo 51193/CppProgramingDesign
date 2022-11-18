@@ -79,11 +79,6 @@ float Tower::getRange()
 	return this->tower_data->range;
 }
 
-float Tower::getRangeinWindow(sf::RenderWindow* window)
-{
-	return this->tower_data->range * ((float)window->getSize().x / 2560.f);
-}
-
 float Tower::getDamage()
 {
 	return this->tower_data->damage;

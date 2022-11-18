@@ -50,14 +50,14 @@ void GameState::updateStretchedTower()
 	if (this->title->getPressed() != nullptr && this->stretched_tower == nullptr) {
 		this->stretched_tower = new Tower(this->title->getPressed()->getName(), CardMode);
 		this->stretched_tower->setScale(this->title->getRectSize());
-		this->tower_range->setRadius(this->stretched_tower->getRangeinWindow(this->window));
+		this->tower_range->setRadius(this->stretched_tower->getRange() * (this->battle_field->getChunkSize().x / this->battle_field->getPathNetCount().x));
 	}
 	else if (this->title->getPressed() != nullptr && this->stretched_tower != nullptr) {
 		if (this->stretched_tower->getName() != this->title->getPressed()->getName()) {
 			delete this->stretched_tower;
 			this->stretched_tower = new Tower(this->title->getPressed()->getName(), CardMode);
 			this->stretched_tower->setScale(this->title->getRectSize());
-			this->tower_range->setRadius(this->stretched_tower->getRangeinWindow(this->window));
+			this->tower_range->setRadius(this->stretched_tower->getRange() * (this->battle_field->getChunkSize().x / this->battle_field->getPathNetCount().x));
 		}
 	}
 
