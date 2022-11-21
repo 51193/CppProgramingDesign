@@ -41,7 +41,7 @@ void Chunk::setTower(std::string name)
     if (this->tower != nullptr) {
         this->removeTower();
     }
-    this->tower = new Tower(name, TowerMode);
+	this->tower = new Tower(name, TowerMode, sf::Vector2f(this->offset.x + this->position.x*this->size.x + this->size.x / 2, this->offset.y + this->position.y * this->size.y + this->size.y / 12));
     this->tower->setScale(sf::Vector2f(this->size.x,
         (this->size.x / Tower::tower_lib[name]->animation_template->animation_data["idle"]->width) *
         Tower::tower_lib[name]->animation_template->animation_data["idle"]->height));
@@ -88,10 +88,10 @@ bool Chunk::isOccupiedByMonster(const std::list<Monster*>& monsters, const sf::V
 	return false;
 }
 
-void Chunk::update(const float& dt, const sf::Vector2f& mousePos)
+void Chunk::update(const float& dt, const sf::Vector2f& mousePos, const sf::Vector2u& path_net_count, std::list<Monster*> monsters)
 {
     if (this->tower != nullptr) {
-        this->tower->update(dt);
+		this->tower->update(dt, this->position, path_net_count, monsters);
         this->is_blocked = true;
     }
     else this->is_blocked = false;

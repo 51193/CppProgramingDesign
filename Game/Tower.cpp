@@ -11,12 +11,74 @@ void Tower::init()
 	else {
 		this->initTemplate();
 	}
+
+	this->initLaser();
 }
 
 void Tower::initTemplate()
 {
 	tower_lib[this->name] = new TowerTemplate(this->name);
 	this->init();
+}
+
+void Tower::initLaser()
+{
+	this->laser_beam.setFillColor(sf::Color::Color(0, 204, 204, 255));
+	this->laser_beam.setOutlineColor(sf::Color::Color(0, 102, 102, 128));
+	this->laser_beam.setOutlineThickness(3.f);
+	this->laser_beam.setSize(sf::Vector2f(0, 0));
+}
+
+void Tower::updateAiming(const sf::Vector2u& position, const sf::Vector2u& path_net_count, std::list<Monster*> monsters)
+{
+	if (this->target != nullptr) {
+		this->target = nullptr;
+	}
+
+	unsigned int cur{ (unsigned int)this->tower_data->range };
+
+	for (auto& i : monsters) {
+		if ((unsigned int)sqrt(
+			(i->getPositiononPathNet().x - (position.x * path_net_count.x + path_net_count.x / 2)) * (i->getPositiononPathNet().x - (position.x * path_net_count.x + path_net_count.x / 2)) +
+			(i->getPositiononPathNet().y - (position.y * path_net_count.y + path_net_count.y / 2)) * (i->getPositiononPathNet().y - (position.y * path_net_count.y + path_net_count.y / 2)))
+			< cur) {
+
+			cur = (unsigned int)sqrt(
+				(i->getPositiononPathNet().x - (position.x * path_net_count.x + path_net_count.x / 2)) * (i->getPositiononPathNet().x - (position.x * path_net_count.x + path_net_count.x / 2)) +
+				(i->getPositiononPathNet().y - (position.y * path_net_count.y + path_net_count.y / 2)) * (i->getPositiononPathNet().y - (position.y * path_net_count.y + path_net_count.y / 2)));
+
+			this->target = i;
+		}
+	}
+}
+
+void Tower::updateAttack(const float& dt)
+{
+	if (this->target != nullptr) {
+		this->state = ActiveState;
+		if (this->target->getExactPos().x <= this->muzzle.x) {
+			this->laser_beam.setPosition(this->target->getExactPos());
+			this->laser_beam.setSize(sf::Vector2f(
+				(float)sqrt(
+					(this->target->getExactPos().x - this->muzzle.x) * (this->target->getExactPos().x - this->muzzle.x) +
+					(this->target->getExactPos().y - this->muzzle.y) * (this->target->getExactPos().y - this->muzzle.y)),
+				3.f));
+			this->laser_beam.setRotation((float)atan((this->muzzle.y - this->target->getExactPos().y) / (this->muzzle.x - this->target->getExactPos().x)) * (180.f / (float)3.14));
+		}
+		else {
+			this->laser_beam.setPosition(this->muzzle);
+			this->laser_beam.setSize(sf::Vector2f(
+				(float)sqrt(
+					(this->target->getExactPos().x - this->muzzle.x) * (this->target->getExactPos().x - this->muzzle.x) +
+					(this->target->getExactPos().y - this->muzzle.y) * (this->target->getExactPos().y - this->muzzle.y)),
+				3.f));
+			this->laser_beam.setRotation((float)atan((this->target->getExactPos().y - this->muzzle.y) / (this->target->getExactPos().x - this->muzzle.x)) * (180.f / (float)3.14));
+		}
+	}
+	else {
+		this->state = IdleState;
+		this->laser_beam.setSize(sf::Vector2f(0.f, 0.f));
+	}
 }
 
 void Tower::playingAnimation(const float& dt)
@@ -37,7 +99,18 @@ void Tower::playingAnimation(const float& dt)
 Tower::Tower(std::string name, unsigned short int exist_mode)
 	:name{ name },
 	exist_mode{ exist_mode },
-	state{ IdleState }
+	state{ IdleState },
+	muzzle{ 0.f, 0.f }
+{
+	this->init();
+	this->playingAnimation(0);
+}
+
+Tower::Tower(std::string name, unsigned short int exist_mode, const sf::Vector2f& muzzle)
+	:name{ name },
+	exist_mode{ exist_mode },
+	state{ IdleState },
+	muzzle{ muzzle }
 {
 	this->init();
 	this->playingAnimation(0);
@@ -99,6 +172,13 @@ unsigned short int Tower::getState()
 	return this->state;
 }
 
+void Tower::update(const float& dt, const sf::Vector2u& position, const sf::Vector2u& path_net_count, std::list<Monster*> monsters)
+{
+	this->updateAiming(position, path_net_count, monsters);
+	this->updateAttack(dt);
+	this->playingAnimation(dt);
+}
+
 void Tower::update(const float& dt)
 {
 	this->playingAnimation(dt);
@@ -107,4 +187,5 @@ void Tower::update(const float& dt)
 void Tower::render(sf::RenderTarget* target)
 {
 	target->draw(this->sprite);
+	target->draw(this->laser_beam);
 }

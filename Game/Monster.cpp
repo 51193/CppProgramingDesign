@@ -193,8 +193,8 @@ void Monster::playingAnimation(const float& dt)
 		float x{ this->path.front().x - this->position.x };
 		float y{ this->path.front().y - this->position.y };
 		if (abs(x) > abs(y)) {
-			if (x > 0)this->animation_component->play("left", dt, false);
-			else this->animation_component->play("right", dt, false);
+			if (x > 0)this->animation_component->play("right", dt, false);
+			else this->animation_component->play("left", dt, false);
 		}
 		else {
 			if (y > 0)this->animation_component->play("down", dt, false);

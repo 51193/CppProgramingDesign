@@ -1,12 +1,10 @@
 #ifndef CHUNK_H
 #define CHUNK_H
 
-#include<list>
 #include<queue>
 
 #include"Button.h"
 #include"Tower.h"
-#include"Monster.h"
 
 enum EndSide {
 	Null=0,
@@ -54,7 +52,7 @@ public:
 		const std::vector<std::vector<int>>& path_net_for_chunk
 	);//这个函数只有在有炮塔被放置或移除时调用
 
-	void update(const float& dt, const sf::Vector2f& mousePos);
+	void update(const float& dt, const sf::Vector2f& mousePos, const sf::Vector2u& path_net_count, std::list<Monster*> monsters);
 	void render(sf::RenderTarget* target);
 };
 

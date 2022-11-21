@@ -19,42 +19,6 @@ void BattleField::init()
 	this->monsters.push_back(new Monster("tests", this->path_net_size, 10, 110));
 	this->monsters.push_back(new Monster("tests", this->path_net_size, 10, 120));
 	this->monsters.push_back(new Monster("tests", this->path_net_size, 10, 130));
-
-	(*this->map)[1][0]->setTower("test");
-	(*this->map)[1][1]->setTower("test");
-	(*this->map)[1][2]->setTower("test");
-	(*this->map)[1][3]->setTower("test");
-	(*this->map)[1][4]->setTower("test");
-	(*this->map)[1][5]->setTower("test");
-	(*this->map)[1][6]->setTower("test");
-	(*this->map)[1][7]->setTower("test");
-
-	(*this->map)[3][1]->setTower("test");
-	(*this->map)[3][2]->setTower("test");
-	(*this->map)[3][3]->setTower("test");
-	(*this->map)[3][4]->setTower("test");
-	(*this->map)[3][5]->setTower("test");
-	(*this->map)[3][6]->setTower("test");
-	(*this->map)[3][7]->setTower("test");
-	(*this->map)[3][8]->setTower("test");
-
-	(*this->map)[5][0]->setTower("test");
-	(*this->map)[5][1]->setTower("test");
-	(*this->map)[5][2]->setTower("test");
-	(*this->map)[5][3]->setTower("test");
-	(*this->map)[5][4]->setTower("test");
-	(*this->map)[5][5]->setTower("test");
-	(*this->map)[5][6]->setTower("test");
-	(*this->map)[5][7]->setTower("test");
-
-	(*this->map)[7][1]->setTower("test");
-	(*this->map)[7][2]->setTower("test");
-	(*this->map)[7][3]->setTower("test");
-	(*this->map)[7][4]->setTower("test");
-	(*this->map)[7][5]->setTower("test");
-	(*this->map)[7][6]->setTower("test");
-	(*this->map)[7][7]->setTower("test");
-	(*this->map)[7][8]->setTower("test");
 }
 
 void BattleField::initMap()
@@ -267,7 +231,7 @@ void BattleField::update(const float& dt, const sf::Vector2f& mousePos)
 
 	for (auto& i : *(this->map)) {
 		for (auto& j : i) {
-			j->update(dt, mousePos);
+			j->update(dt, mousePos, this->path_net_count, this->monsters);
 		}
 	}
 
@@ -276,13 +240,13 @@ void BattleField::update(const float& dt, const sf::Vector2f& mousePos)
 
 void BattleField::render(sf::RenderTarget* target)
 {
-	for (auto& i : this->monsters) {
-		i->render(target);
-	}
-
 	for (auto& i : *(this->map)) {
 		for (auto& j : i) {
 			j->render(target);
 		}
+	}
+
+	for (auto& i : this->monsters) {
+		i->render(target);
 	}
 }
