@@ -9,6 +9,8 @@ void GameState::init()
 	this->initCards();
 
 	this->initBattleField();
+
+	this->initMoneyText();
 }
 
 void GameState::initBackground()
@@ -45,25 +47,37 @@ void GameState::initBattleField()
 	this->battle_field->updateWhenTowerChanging();
 }
 
+void GameState::initMoneyText()
+{
+	this->text.setFont(*this->font);
+	this->text.setString(std::to_string(this->money));
+	this->text.setFillColor(sf::Color::Black);
+	this->text.setCharacterSize(this->window->getSize().y / 20);
+	this->text.setPosition(0, 0);
+	this->text.setFillColor(sf::Color::Black);
+}
+
 void GameState::updateStretchedTower()
 {
-	if (this->title->getPressed() != nullptr && this->stretched_tower == nullptr) {
-		this->stretched_tower = new Tower(this->title->getPressed()->getName(), CardMode);
-		this->stretched_tower->setScale(this->title->getRectSize());
-		this->tower_range->setRadius(this->stretched_tower->getRange() * (this->battle_field->getChunkSize().x / this->battle_field->getPathNetCount().x));
-	}
-	else if (this->title->getPressed() != nullptr && this->stretched_tower != nullptr) {
-		if (this->stretched_tower->getName() != this->title->getPressed()->getName()) {
-			delete this->stretched_tower;
+	if (money >= 20) {
+		if (this->title->getPressed() != nullptr && this->stretched_tower == nullptr) {
 			this->stretched_tower = new Tower(this->title->getPressed()->getName(), CardMode);
 			this->stretched_tower->setScale(this->title->getRectSize());
 			this->tower_range->setRadius(this->stretched_tower->getRange() * (this->battle_field->getChunkSize().x / this->battle_field->getPathNetCount().x));
 		}
-	}
+		else if (this->title->getPressed() != nullptr && this->stretched_tower != nullptr) {
+			if (this->stretched_tower->getName() != this->title->getPressed()->getName()) {
+				delete this->stretched_tower;
+				this->stretched_tower = new Tower(this->title->getPressed()->getName(), CardMode);
+				this->stretched_tower->setScale(this->title->getRectSize());
+				this->tower_range->setRadius(this->stretched_tower->getRange() * (this->battle_field->getChunkSize().x / this->battle_field->getPathNetCount().x));
+			}
+		}
 
-	if (this->stretched_tower != nullptr) {
-		this->stretched_tower->moveto(this->mousePosView - sf::Vector2f(this->title->getRectSize().x / 2, this->title->getRectSize().y / 2));
-		this->tower_range->setPosition(this->mousePosView - sf::Vector2f(this->tower_range->getRadius(), this->tower_range->getRadius()));
+		if (this->stretched_tower != nullptr) {
+			this->stretched_tower->moveto(this->mousePosView - sf::Vector2f(this->title->getRectSize().x / 2, this->title->getRectSize().y / 2));
+			this->tower_range->setPosition(this->mousePosView - sf::Vector2f(this->tower_range->getRadius(), this->tower_range->getRadius()));
+		}
 	}
 }
 
@@ -72,8 +86,10 @@ void GameState::updatePlantTower()
 	if (this->stretched_tower != nullptr &&
 		this->battle_field->getPressed() != nullptr &&
 		this->battle_field->getPressed()->getTower() == nullptr &&
-		!this->battle_field->getPressed()->isOccupiedByMonster(this->battle_field->getMonsterList(), this->battle_field->getPathNetCount())
-		) {
+		!this->battle_field->getPressed()->isOccupiedByMonster(this->battle_field->getMonsterList(), this->battle_field->getPathNetCount()) &&
+		this->battle_field->getPressed()->getPosition().x != 0 &&
+		!(this->battle_field->getPressed()->getPosition().x == 11 && this->battle_field->getPressed()->getPosition().y == 4))
+	{
 
 		this->battle_field->getPressed()->setTower(this->stretched_tower->getName());
 		this->battle_field->updateWhenTowerChanging();
@@ -81,6 +97,22 @@ void GameState::updatePlantTower()
 		delete this->stretched_tower;
 		this->stretched_tower = nullptr;
 		this->tower_range->setRadius(0.f);
+
+		this->money -= 20;
+	}
+}
+
+void GameState::updateMoney()
+{
+	this->money += this->battle_field->getMoney();
+
+	this->text.setString(std::to_string(this->money));
+}
+
+void GameState::updateGameover()
+{
+	if (this->battle_field->isLose()) {
+		this->states->pop();
 	}
 }
 
@@ -91,7 +123,8 @@ void GameState::renderBackground(sf::RenderTarget* target)
 
 GameState::GameState(sf::RenderWindow* window, sf::Font* font, std::stack<State*>* states)
 	:State{ window, font, states },
-	stretched_tower{ nullptr }
+	stretched_tower{ nullptr },
+	money{ 20 }
 {
 	this->init();
 }
@@ -114,6 +147,10 @@ void GameState::update(const float& dt)
 	this->battle_field->update(dt, this->mousePosView);
 
 	if (this->stretched_tower != nullptr)this->stretched_tower->update(dt);
+
+	this->updateMoney();
+
+	this->updateGameover();
 }
 
 void GameState::render(sf::RenderTarget* target)
@@ -127,4 +164,6 @@ void GameState::render(sf::RenderTarget* target)
 	}
 
 	target->draw(*this->tower_range);
+
+	target->draw(this->text);
 }

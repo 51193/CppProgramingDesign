@@ -29,7 +29,7 @@ void Tower::initLaser()
 	this->laser_beam.setSize(sf::Vector2f(0, 0));
 }
 
-void Tower::updateAiming(const sf::Vector2u& position, const sf::Vector2u& path_net_count, std::list<Monster*> monsters)
+void Tower::updateAiming(const sf::Vector2u& position, const sf::Vector2u& path_net_count, std::vector<Monster*> monsters)
 {
 	if (this->target != nullptr) {
 		this->target = nullptr;
@@ -74,6 +74,7 @@ void Tower::updateAttack(const float& dt)
 				3.f));
 			this->laser_beam.setRotation((float)atan((this->target->getExactPos().y - this->muzzle.y) / (this->target->getExactPos().x - this->muzzle.x)) * (180.f / (float)3.14));
 		}
+		this->target->getDamage(this->tower_data->damage * dt);
 	}
 	else {
 		this->state = IdleState;
@@ -172,7 +173,7 @@ unsigned short int Tower::getState()
 	return this->state;
 }
 
-void Tower::update(const float& dt, const sf::Vector2u& position, const sf::Vector2u& path_net_count, std::list<Monster*> monsters)
+void Tower::update(const float& dt, const sf::Vector2u& position, const sf::Vector2u& path_net_count, std::vector<Monster*> monsters)
 {
 	this->updateAiming(position, path_net_count, monsters);
 	this->updateAttack(dt);

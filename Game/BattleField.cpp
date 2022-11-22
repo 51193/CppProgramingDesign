@@ -6,19 +6,19 @@ void BattleField::init()
 	this->initPathNet();
 	this->initPathNetforChunk();
 
-	this->monsters.push_back(new Monster("testf", this->path_net_size, 10, 10));
-	this->monsters.push_back(new Monster("testf", this->path_net_size, 10, 20));
-	this->monsters.push_back(new Monster("testf", this->path_net_size, 10, 30));
-	this->monsters.push_back(new Monster("testf", this->path_net_size, 10, 40));
-	this->monsters.push_back(new Monster("test", this->path_net_size, 10, 50));
-	this->monsters.push_back(new Monster("test", this->path_net_size, 10, 60));
-	this->monsters.push_back(new Monster("test", this->path_net_size, 10, 70));
-	this->monsters.push_back(new Monster("test", this->path_net_size, 10, 80));
-	this->monsters.push_back(new Monster("test", this->path_net_size, 10, 90));
-	this->monsters.push_back(new Monster("tests", this->path_net_size, 10, 100));
-	this->monsters.push_back(new Monster("tests", this->path_net_size, 10, 110));
-	this->monsters.push_back(new Monster("tests", this->path_net_size, 10, 120));
-	this->monsters.push_back(new Monster("tests", this->path_net_size, 10, 130));
+	//this->monsters.push_back(new Monster("testf", this->path_net_size, 10, 10));
+	//this->monsters.push_back(new Monster("testf", this->path_net_size, 10, 20));
+	//this->monsters.push_back(new Monster("testf", this->path_net_size, 10, 30));
+	//this->monsters.push_back(new Monster("testf", this->path_net_size, 10, 40));
+	//this->monsters.push_back(new Monster("test", this->path_net_size, 10, 50));
+	//this->monsters.push_back(new Monster("test", this->path_net_size, 10, 60));
+	//this->monsters.push_back(new Monster("test", this->path_net_size, 10, 70));
+	//this->monsters.push_back(new Monster("test", this->path_net_size, 10, 80));
+	//this->monsters.push_back(new Monster("test", this->path_net_size, 10, 90));
+	//this->monsters.push_back(new Monster("tests", this->path_net_size, 10, 100));
+	//this->monsters.push_back(new Monster("tests", this->path_net_size, 10, 110));
+	//this->monsters.push_back(new Monster("tests", this->path_net_size, 10, 120));
+	//this->monsters.push_back(new Monster("tests", this->path_net_size, 10, 130));
 }
 
 void BattleField::initMap()
@@ -132,6 +132,67 @@ void BattleField::updateInnerPathNet()
 	}
 }
 
+void BattleField::updateTimer(const float& dt)
+{
+	this->timer += dt;
+	this->generate_cool_down -= dt;
+}
+
+void BattleField::generateMonster()
+{
+	if (this->generate_cool_down < 0.f) {
+
+		unsigned int n{ 1 };
+
+		this->generate_cool_down = 5.f - timer / 5.f;
+
+		if (this->generate_cool_down < (float)0.5) {
+			this->generate_cool_down = (float)0.5;
+		}
+
+		for (size_t i{ 0 }; i < n; i++) {
+
+			bool key{ true };
+
+			int cur{ rand() };
+			int x{ cur - (cur / (int)(*this->path_net)[0].size()) * ((int)(*this->path_net)[0].size()) };
+
+			cur = rand();
+			int y{ cur - (cur / 3) * 3 };
+
+			while (key) {
+
+				key = false;
+
+				if ((*this->path_net)[0][x] < 0) {
+					cur = rand();
+					x = cur - (cur / (int)this->path_net_count.y) * (int)this->path_net_count.y;
+					key = true;
+				}
+			}
+
+
+			if (y == 0)
+				this->monsters.push_back(new Monster("test", this->path_net_size, 0, x));
+			else if (y == 1)
+				this->monsters.push_back(new Monster("testf", this->path_net_size, 0, x));
+			else
+				this->monsters.push_back(new Monster("tests", this->path_net_size, 0, x));
+		}
+
+	}
+}
+
+bool BattleField::isLose()
+{
+	for (auto& j : this->monsters) {
+		if (j->getPositiononPathNet().x == this->path_net->size() - 1) {
+			return true;
+		}
+	}
+	return false;
+}
+
 void BattleField::updateMonsters(const float& dt)
 {
 	for (auto& i : monsters) {
@@ -149,6 +210,18 @@ void BattleField::updateMonsters(const float& dt)
 	}
 }
 
+void BattleField::updateDeath()
+{
+	for (size_t i{ 0 }; i < this->monsters.size(); i++) {
+		if (this->monsters[i]->isDead()) {
+			delete this->monsters[i];
+			this->monsters.erase(this->monsters.begin() + i);
+			i--;
+			this->temp_money += 5;
+		}
+	}
+}
+
 BattleField::BattleField(
 	const float& title_height,
 	sf::RenderWindow* window,
@@ -157,6 +230,7 @@ BattleField::BattleField(
 	const std::vector<sf::Vector2u>& ends
 	)
 	:
+	seed{ 0 },
 	a{ (float)0.8 },//修改该参数可以放大或缩小战场占显示器的比例
 	window{ window },
 	size{ size },
@@ -167,7 +241,10 @@ BattleField::BattleField(
 	title_height{ title_height },
 	offset{
 	this->window->getSize().x * ((1 - this->a) / 2),
-	this->title_height + ((this->window->getSize().y - this->title_height) - (this->size.y * this->chunk_size.y)) / 2 }
+	this->title_height + ((this->window->getSize().y - this->title_height) - (this->size.y * this->chunk_size.y)) / 2 },
+	timer{ 0.f },
+	generate_cool_down{ 0.f },
+	temp_money{ 0 }
 {
 	/*std::cout << "size: " << size.x << " " << size.y << std::endl;
 	std::cout << "chunk_size: " << chunk_size.x << " " << chunk_size.y << std::endl;
@@ -176,6 +253,7 @@ BattleField::BattleField(
 	std::cout << "title_height: " << title_height << std::endl;
 	std::cout << "offset: " << offset.x << " " << offset.y << std::endl;*/
 	this->init();
+	srand(seed);
 }
 
 BattleField::~BattleField()
@@ -207,7 +285,7 @@ Chunk* BattleField::getPressed()
 	return nullptr;
 }
 
-const std::list<Monster*>& BattleField::getMonsterList()
+const std::vector<Monster*>& BattleField::getMonsterList()
 {
 	return this->monsters;
 }
@@ -223,6 +301,13 @@ void BattleField::updateWhenTowerChanging()
 	this->updateInnerPathNet();
 }
 
+unsigned int BattleField::getMoney()
+{
+	unsigned int temp{ this->temp_money };
+	this->temp_money = 0;
+	return temp;
+}
+
 void BattleField::update(const float& dt, const sf::Vector2f& mousePos)
 {
 	this->resetPathNet();
@@ -236,6 +321,11 @@ void BattleField::update(const float& dt, const sf::Vector2f& mousePos)
 	}
 
 	this->updateMonsters(dt);
+
+	this->updateDeath();
+
+	this->updateTimer(dt);
+	this->generateMonster();
 }
 
 void BattleField::render(sf::RenderTarget* target)

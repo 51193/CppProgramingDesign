@@ -51,7 +51,7 @@ private:
 	void initTemplate();
 	void initLaser();
 
-	void updateAiming(const sf::Vector2u& position, const sf::Vector2u& path_net_count, std::list<Monster*> monsters);
+	void updateAiming(const sf::Vector2u& position, const sf::Vector2u& path_net_count, std::vector<Monster*> monsters);
 	void updateAttack(const float& dt);
 	void playingAnimation(const float& dt);//更新动画播放效果，属于一个update函数，以后可以添加一个动画播放队列，后续再精细化这个动画播放部件
 	
@@ -75,7 +75,7 @@ public:
 	bool getAOEBool();//获取是否为范围伤害的布尔值
 	unsigned short int getState();//获取状态（待机，活跃等）
 
-	void update(const float& dt, const sf::Vector2u& position, const sf::Vector2u& path_net_count, std::list<Monster*> monsters);
+	void update(const float& dt, const sf::Vector2u& position, const sf::Vector2u& path_net_count, std::vector<Monster*> monsters);
 	void update(const float& dt);//仅做卡片update
 	void render(sf::RenderTarget* target);
 

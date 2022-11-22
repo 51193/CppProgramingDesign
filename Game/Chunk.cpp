@@ -79,7 +79,7 @@ bool Chunk::isBlocked()
     return this->is_blocked;
 }
 
-bool Chunk::isOccupiedByMonster(const std::list<Monster*>& monsters, const sf::Vector2u& path_net_count)
+bool Chunk::isOccupiedByMonster(const std::vector<Monster*>& monsters, const sf::Vector2u& path_net_count)
 {
 	for (auto& i : monsters) {
 		if (sf::Vector2u(i->getPositiononPathNet().x / path_net_count.x, i->getPositiononPathNet().y / path_net_count.y) == this->position)
@@ -88,7 +88,7 @@ bool Chunk::isOccupiedByMonster(const std::list<Monster*>& monsters, const sf::V
 	return false;
 }
 
-void Chunk::update(const float& dt, const sf::Vector2f& mousePos, const sf::Vector2u& path_net_count, std::list<Monster*> monsters)
+void Chunk::update(const float& dt, const sf::Vector2f& mousePos, const sf::Vector2u& path_net_count, std::vector<Monster*> monsters)
 {
     if (this->tower != nullptr) {
 		this->tower->update(dt, this->position, path_net_count, monsters);

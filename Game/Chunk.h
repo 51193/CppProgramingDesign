@@ -45,14 +45,14 @@ public:
 
 	bool isPressed();//判断当前格子是否被点击
 	bool isBlocked();//判断当前格子上是否有东西
-	bool isOccupiedByMonster(const std::list<Monster*>& monsters, const sf::Vector2u& path_net_count);
+	bool isOccupiedByMonster(const std::vector<Monster*>& monsters, const sf::Vector2u& path_net_count);
 
 	void updateStepMapandPathingQueue(
 		const sf::Vector2u& path_net_count,
 		const std::vector<std::vector<int>>& path_net_for_chunk
 	);//这个函数只有在有炮塔被放置或移除时调用
 
-	void update(const float& dt, const sf::Vector2f& mousePos, const sf::Vector2u& path_net_count, std::list<Monster*> monsters);
+	void update(const float& dt, const sf::Vector2f& mousePos, const sf::Vector2u& path_net_count, std::vector<Monster*> monsters);
 	void render(sf::RenderTarget* target);
 };
 

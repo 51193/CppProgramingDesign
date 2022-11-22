@@ -17,6 +17,7 @@ void Monster::initTemplate()
 	this->monster_data = new MonsterData(*monster_lib[this->name]->monster_data);
 	this->animation_component = new AnimationComponent(this->sprite, *monster_lib[this->name]->animation_template);
 
+	this->temp_health = this->monster_data->health;
 }
 
 void Monster::initSpirteScale(const sf::Vector2f& path_net_size)
@@ -127,10 +128,10 @@ void Monster::updatePathing(
 			if (min > i)min = i;
 		}
 		if (min < max_step) {
-			if (arr[0] == min) cur = sf::Vector2i(cur.x, cur.y - 1);
-			else if (arr[1] == min) cur = sf::Vector2i(cur.x, cur.y + 1);
-			else if (arr[2] == min) cur = sf::Vector2i(cur.x - 1, cur.y);
+			if (arr[2] == min) cur = sf::Vector2i(cur.x - 1, cur.y);
 			else if (arr[3] == min) cur = sf::Vector2i(cur.x + 1, cur.y);
+			else if (arr[0] == min) cur = sf::Vector2i(cur.x, cur.y - 1);
+			else if (arr[1] == min) cur = sf::Vector2i(cur.x, cur.y + 1);
 
 			this->path.push(sf::Vector2u(cur.x + offset_x, cur.y + offset_y));
 		}
@@ -206,7 +207,8 @@ void Monster::playingAnimation(const float& dt)
 Monster::Monster(const std::string& name, const sf::Vector2f& path_net_size, unsigned int x, unsigned int y)
 	:name{ name },
 	position_on_pathnet{x, y},
-	position{ (float)x, (float)y }
+	position{ (float)x, (float)y },
+	is_dead{ false }
 {
 	this->init(path_net_size);
 }
@@ -245,6 +247,17 @@ void Monster::setExactPos(const sf::Vector2f& exact_pos)
 const sf::Vector2u& Monster::getSize()
 {
 	return this->monster_data->animation_size;
+}
+
+const bool& Monster::isDead()
+{
+	return this->is_dead;
+}
+
+void Monster::getDamage(const float& damage)
+{
+	this->temp_health -= damage;
+	if (temp_health < 0.f)this->is_dead = true;
 }
 
 void Monster::update(

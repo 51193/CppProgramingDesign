@@ -16,6 +16,9 @@ private:
 	MonsterData* monster_data;
 	AnimationComponent* animation_component;
 
+	float temp_health;//目前的血量
+	bool is_dead;
+
 	sf::Vector2f position;//该怪物相对于寻路网格的位置
 	sf::Vector2f exact_pos;//实际位于屏幕上像素位置
 
@@ -54,6 +57,10 @@ public:
 	void setExactPos(const sf::Vector2f& exact_pos);//修改所处像素位置
 
 	const sf::Vector2u& getSize();//获取碰撞箱，单位为寻路节点
+
+	const bool& isDead();
+
+	void getDamage(const float& damage);
 
 	void update(
 		const float& dt,
